@@ -1,0 +1,14 @@
+{
+  "name": "acrapol-ia",
+  "version": "1.0.0",
+  "engines": {
+    "node": "18.x"
+  }
+}
+```
+
+5. **"Commit changes"**
+
+Vercel redespliegará automáticamente. Espera 1-2 minutos y prueba de nuevo:
+```
+https://acrapol-ia.vercel.app/api/embed
