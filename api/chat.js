@@ -13,6 +13,10 @@ export default async function handler(req, res) {
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
     const { messages, system } = body;
+
+    console.log("Mensajes recibidos:", JSON.stringify(messages).slice(0, 200));
+    console.log("API Key disponible:", !!process.env.ANTHROPIC_KEY);
+
     if (!messages) return res.status(400).json({ error: "Faltan mensajes" });
 
     const r = await fetch("https://api.anthropic.com/v1/messages", {
@@ -31,10 +35,13 @@ export default async function handler(req, res) {
     });
 
     const data = await r.json();
+    console.log("Respuesta Anthropic:", JSON.stringify(data).slice(0, 300));
+
     if (!data.content) return res.status(500).json({ error: "Error Claude", detail: data });
     return res.status(200).json({ reply: data.content[0].text });
 
   } catch(e) {
+    console.error("Error en chat:", e.message);
     return res.status(500).json({ error: e.message });
   }
 }
