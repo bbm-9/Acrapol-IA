@@ -5,10 +5,3 @@
     "node": "18.x"
   }
 }
-```
-
-5. **"Commit changes"**
-
-Vercel redespliegará automáticamente. Espera 1-2 minutos y prueba de nuevo:
-```
-https://acrapol-ia.vercel.app/api/embed
