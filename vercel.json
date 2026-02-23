@@ -1,15 +1,12 @@
 {
   "version": 2,
-  "headers": [
-    {
-      "source": "/(.*).html",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
-      ]
-    }
-  ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/public/$1" }
+    { "src": "/api/embed", "dest": "/api/embed.js" },
+    { "src": "/api/chat", "dest": "/api/chat.js" },
+    { "src": "/api/save", "dest": "/api/save.js" },
+    { "src": "/api/search", "dest": "/api/search.js" },
+    { "src": "/api/docs", "dest": "/api/docs.js" },
+    { "src": "/(.*\\.(jpg|png|gif|ico|css|js))", "dest": "/public/$1" },
+    { "src": "/(.*)", "dest": "/api/index" }
   ]
 }
