@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ACRAPOL IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Barlow',sans-serif;background:#f5f5f5;height:100vh;display:flex;flex-direction:column;color:#1a1a1a}
+    #header{background:#C1161A;padding:12px 20px;display:flex;align-items:center;gap:12px;border-bottom:3px solid #F5C518;flex-shrink:0}
+    .logo{width:42px;height:42px;background:#F5C518;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:22px;color:#C1161A}
+    .logo img{width:42px;height:42px;object-fit:contain}
+    .titulo{font-weight:bold;font-size:16px;color:#fff}
+    .subtitulo{font-size:11px;color:#F5C518}
+    .marca{margin-left:auto;font-size:12px;font-weight:bold;color:#F5C518;letter-spacing:1px}
+    #tabs{display:flex;background:#fff;border-bottom:1px solid #ddd;flex-shrink:0;overflow-x:auto}
+    .tab{flex:1;min-width:70px;padding:10px 6px;border:none;border-bottom:3px solid transparent;background:transparent;color:#666;font-size:11px;cursor:pointer;text-align:center;transition:all 0.2s}
+    .tab.active{background:#C1161A;color:#fff;border-bottom:3px solid #F5C518;font-weight:bold}
+    .tab-icon{font-size:16px;display:block}
+    #messages{flex:1;overflow-y:auto;padding:16px 12px;display:flex;flex-direction:column;gap:12px}
+    .empty{margin:auto;text-align:center;opacity:0.45;padding:40px}
+    .empty-icon{font-size:48px;margin-bottom:12px}
+    .empty-title{font-size:15px;font-weight:bold;margin-bottom:6px}
+    .empty-hint{font-size:13px;color:#888;max-width:260px}
+    .msg-row{display:flex;align-items:flex-end;gap:8px}
+    .msg-row.user{justify-content:flex-end}
+    .avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+    .avatar.bot{background:#C1161A}
+    .avatar.usr{background:#F5C518}
+    .bubble{max-width:80%;padding:10px 14px;font-size:13px;line-height:1.6}
+    .bubble.bot{background:#fff;border:1px solid #ddd;border-radius:16px 16px 16px 4px}
+    .bubble.usr{background:#C1161A;color:#fff;border-radius:16px 16px 4px 16px}
+    .typing{display:inline-flex;gap:4px;align-items:center}
+    .dot{width:7px;height:7px;border-radius:50%;background:#F5C518;animation:bounce 1.2s infinite}
+    .dot:nth-child(2){animation-delay:0.2s}
+    .dot:nth-child(3){animation-delay:0.4s}
+    #input-area{padding:10px 12px;background:#fff;border-top:1px solid #ddd;flex-shrink:0}
+    #clear-row{display:flex;justify-content:flex-end;margin-bottom:6px}
+    #clear-btn{background:transparent;border:1px solid #ddd;color:#999;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer}
+    #input-row{display:flex;gap:8px;align-items:flex-end}
+    #user-input{flex:1;background:#f5f5f5;border:1px solid #ddd;border-radius:10px;color:#1a1a1a;padding:10px 12px;font-size:13px;resize:none;outline:none;font-family:inherit;line-height:1.5}
+    #send-btn{width:44px;height:44px;background:#F5C518;border:none;border-radius:10px;font-size:20px;cursor:pointer;flex-shrink:0}
+    #send-btn:disabled{background:#ccc;cursor:not-allowed}
+    #hint{font-size:10px;color:#aaa;text-align:center;margin-top:6px}
+    #admin-panel{flex:1;overflow-y:auto;padding:20px;background:#f5f5f5;display:none}
+    .admin-card{background:#fff;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    .admin-title{font-weight:bold;font-size:15px;margin-bottom:12px}
+    .dropzone{border:2px dashed #ddd;border-radius:10px;padding:30px;text-align:center;cursor:pointer;background:#f5f5f5;transition:all 0.2s}
+    .dropzone:hover,.dropzone.over{border-color:#C1161A;background:#fff5f5}
+    .dropzone-icon{font-size:36px;margin-bottom:8px}
+    .dropzone-title{font-weight:bold;color:#C1161A}
+    .dropzone-hint{font-size:12px;color:#888;margin-top:4px}
+    #upload-log{margin-top:12px;background:#1a1a1a;border-radius:8px;padding:12px;max-height:200px;overflow-y:auto;display:none}
+    .log-line{font-size:12px;font-family:monospace;line-height:1.8}
+    .log-ok{color:#4caf50}.log-err{color:#f44336}.log-info{color:#e0e0e0}.log-warn{color:#F5C518}
+    .doc-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:8px;background:#f5f5f5;margin-bottom:8px}
+    .doc-name{font-size:13px;font-weight:bold}
+    .doc-count{font-size:11px;color:#888}
+    .doc-del{background:transparent;border:1px solid #ffcccc;color:#C1161A;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer}
+    .login-box{max-width:340px;margin:60px auto;background:#fff;border-radius:12px;padding:30px;box-shadow:0 2px 12px rgba(0,0,0,0.08);text-align:center}
+    .login-icon{font-size:36px;margin-bottom:8px}
+    .login-title{font-weight:bold;font-size:16px;margin-bottom:4px}
+    .login-hint{font-size:12px;color:#888;margin-bottom:16px}
+    .login-input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;margin-bottom:8px}
+    .login-error{color:#C1161A;font-size:12px;margin-bottom:8px;display:none}
+    .login-btn{width:100%;background:#C1161A;color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:bold;cursor:pointer}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <div class="logo">
+    <img src="/Plantilla%20preguntas%20historias.jpg" onerror="this.outerHTML='⚖️'"/>
+  </div>
+  <div>
+    <div class="titulo">Asistente Virtual</div>
+    <div class="subtitulo">Escala Básica · Policía Nacional</div>
+  </div>
+  <div class="marca">ACRAPOL IA</div>
+</div>
+
+<div id="tabs">
+  <button class="tab active" onclick="setModo('chat')" id="tab-chat"><span class="tab-icon">💬</span>Resolver Dudas</button>
+  <button class="tab" onclick="setModo('test')" id="tab-test"><span class="tab-icon">📝</span>Generar Test</button>
+  <button class="tab" onclick="setModo('resumen')" id="tab-resumen"><span class="tab-icon">📖</span>Resumen</button>
+  <button class="tab" onclick="setModo('simulacro')" id="tab-simulacro"><span class="tab-icon">🎯</span>Simulacro</button>
+  <button class="tab" onclick="setModo('admin')" id="tab-admin"><span class="tab-icon">⚙️</span>Admin</button>
+</div>
+
+<div id="messages"></div>
+
+<div id="input-area">
+  <div id="clear-row" style="display:none">
+    <button id="clear-btn" onclick="clearChat()">🗑 Limpiar chat</button>
+  </div>
+  <div id="input-row">
+    <textarea id="user-input" rows="2" placeholder="Escribe tu duda..." onkeydown="handleKey(event)"></textarea>
+    <button id="send-btn" onclick="sendMsg()">➤</button>
+  </div>
+  <div id="hint">Enter para enviar · Shift+Enter para nueva línea</div>
+</div>
+
+<div id="admin-panel">
+  <div class="login-box" id="login-box">
+    <div class="login-icon">🔒</div>
+    <div class="login-title">Panel de Administración</div>
+    <div class="login-hint">Solo para administradores de ACRAPOL</div>
+    <input type="password" class="login-input" id="pass-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div class="login-error" id="login-error">Contraseña incorrecta</div>
+    <button class="login-btn" onclick="doLogin()">Acceder</button>
+  </div>
+  <div id="admin-content" style="display:none;max-width:700px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div style="font-weight:bold;font-size:18px">⚙️ Panel de Administración</div>
+      <button onclick="doLogout()" style="background:transparent;border:1px solid #ddd;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;color:#888">Cerrar sesión</button>
+    </div>
+    <div class="admin-card">
+      <div class="admin-title">📎 Subir PDFs al temario</div>
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()"
+        ondragover="event.preventDefault();this.classList.add('over')"
+        ondragleave="this.classList.remove('over')"
+        ondrop="event.preventDefault();this.classList.remove('over');processFiles(event.dataTransfer.files)">
+        <div class="dropzone-icon">📄</div>
+        <div class="dropzone-title" id="drop-title">Arrastra tus PDFs aquí</div>
+        <div class="dropzone-hint" id="drop-hint">o haz clic para seleccionarlos</div>
+        <input type="file" id="file-input" accept=".pdf" multiple style="display:none" onchange="processFiles(this.files)"/>
+      </div>
+      <div id="upload-log"></div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-title">📚 Documentos en el temario (<span id="doc-count">0</span>)</div>
+      <div id="doc-list"><div style="color:#aaa;font-size:13px;text-align:center;padding:20px">No hay documentos subidos todavía</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PROXY="https://acrapol-ia.vercel.app";
+const ADMIN_PASS="acrapol2025";
+
+const PROMPTS={
+  chat:`Eres un tutor de la academia ACRAPOL especializado en oposiciones a la Escala Básica de la Policía Nacional de España.
+SOLO puedes responder usando los fragmentos del temario ACRAPOL que se te proporcionan en cada pregunta.
+Si no se te proporcionan fragmentos del temario o la pregunta no tiene relación con ellos, responde EXACTAMENTE esto:
+"No tengo información sobre esto en el temario de ACRAPOL. Consulta con un profesor o hazme otra pregunta."
+Si se te proporcionan fragmentos, responde basándote únicamente en ellos, citando siempre el artículo exacto y la norma.
+Responde de forma clara, precisa y pedagógica en español.`,
+  test:`Eres un generador de preguntas tipo test para la oposición a la Escala Básica de la Policía Nacional.
+Genera entre 5 y 10 preguntas con 3 opciones (A, B, C), indicando la respuesta correcta con explicación.
+Formato: **Pregunta X:** [enunciado] A) [op] B) [op] C) [op] ✅ **Respuesta correcta: X)** — [explicación]`,
+  resumen:`Eres un tutor experto en oposiciones a la Escala Básica de la Policía Nacional.
+Elabora resúmenes estructurados con títulos, subtítulos y puntos clave. Resalta conceptos que suelen aparecer en examen.`,
+  simulacro:`Eres un examinador para la oposición a la Escala Básica de la Policía Nacional.
+Genera un simulacro de 20 preguntas tipo test con 3 opciones (A, B, C).
+Primero muestra TODAS las preguntas sin respuestas. Cuando el usuario envíe sus respuestas corrige el examen, muestra la puntuación y explica cada respuesta. Las erróneas restan 0,25 puntos.`
+};
+
+const PLACEHOLDERS={
+  chat:"Escribe tu duda sobre el temario o la oposición...",
+  test:"Indica el tema o pega el texto para generar preguntas test...",
+  resumen:"Indica el tema o pega el texto que quieres resumir...",
+  simulacro:"Escribe 'Comenzar simulacro' para iniciar..."
+};
+
+const EMPTY={
+  chat:{icon:"💬",title:"Resolver Dudas",hint:"Pregúntame cualquier duda sobre el temario o el proceso selectivo."},
+  test:{icon:"📝",title:"Generar Test",hint:"Dime un tema o pega un texto y te genero preguntas tipo test."},
+  resumen:{icon:"📖",title:"Resumen",hint:"Dime un tema o pega tu texto y te hago un resumen para estudiar."},
+  simulacro:{icon:"🎯",title:"Simulacro",hint:"Escribe 'Comenzar simulacro' para hacer un examen de 20 preguntas."}
+};
+
+let modo="chat",chats={chat:[],test:[],resumen:[],simulacro:[]},loading=false;
+
+function setModo(m){
+  modo=m;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("tab-"+m).classList.add("active");
+  const isAdmin=m==="admin";
+  document.getElementById("messages").style.display=isAdmin?"none":"flex";
+  document.getElementById("input-area").style.display=isAdmin?"none":"block";
+  document.getElementById("admin-panel").style.display=isAdmin?"block":"none";
+  if(!isAdmin){document.getElementById("user-input").placeholder=PLACEHOLDERS[m];renderMessages();}
+}
+
+function renderMessages(){
+  const msgs=chats[modo],container=document.getElementById("messages"),clearRow=document.getElementById("clear-row");
+  container.innerHTML="";
+  clearRow.style.display=msgs.length>0?"flex":"none";
+  if(msgs.length===0){
+    const s=EMPTY[modo];
+    container.innerHTML=`<div class="empty"><div class="empty-icon">${s.icon}</div><div class="empty-title">${s.title}</div><div class="empty-hint">${s.hint}</div></div>`;
+    return;
+  }
+  msgs.forEach(m=>{
+    const row=document.createElement("div");
+    row.className="msg-row"+(m.role==="user"?" user":"");
+    row.innerHTML=m.role==="assistant"
+      ?`<div class="avatar bot">🎓</div><div class="bubble bot">${fmt(m.content)}</div>`
+      :`<div class="bubble usr">${esc(m.content)}</div><div class="avatar usr">👤</div>`;
+    container.appendChild(row);
+  });
+  if(loading){
+    const row=document.createElement("div");
+    row.className="msg-row";
+    row.innerHTML=`<div class="avatar bot">🎓</div><div class="bubble bot"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+    container.appendChild(row);
+  }
+  container.scrollTop=container.scrollHeight;
+}
+
+function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function fmt(t){return esc(t).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");}
+
+async function sendMsg(){
+  const input=document.getElementById("user-input");
+  const text=input.value.trim();
+  if(!text||loading)return;
+  input.value="";
+  chats[modo].push({role:"user",content:text});
+  loading=true;renderMessages();
+  try{
+    let ctx="";
+    try{
+      const e=await(await fetch(`${PROXY}/api/embed`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})})).json();
+      if(e.embedding){
+        const s=await(await fetch(`${PROXY}/api/search`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({embedding:e.embedding})})).json();
+        if(s.results&&s.results.length>0)ctx="\n\nFRAGMENTOS DEL TEMARIO ACRAPOL:\n"+s.results.map((d,i)=>`[${i+1}] ${d.content}`).join("\n\n");
+      }
+    }catch(e){console.warn("RAG:",e.message);}
+    const r=await(await fetch(`${PROXY}/api/chat`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:chats[modo],system:PROMPTS[modo]+ctx})})).json();
+    chats[modo].push({role:"assistant",content:r.reply||"No se pudo obtener respuesta."});
+  }catch(e){chats[modo].push({role:"assistant",content:"Error de conexión. Inténtalo de nuevo."});}
+  loading=false;renderMessages();
+}
+
+function handleKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function clearChat(){chats[modo]=[];renderMessages();}
+
+function doLogin(){
+  if(document.getElementById("pass-input").value===ADMIN_PASS){
+    document.getElementById("login-box").style.display="none";
+    document.getElementById("admin-content").style.display="block";
+    loadDocs();
+  }else{document.getElementById("login-error").style.display="block";}
+}
+
+function doLogout(){
+  document.getElementById("login-box").style.display="block";
+  document.getElementById("admin-content").style.display="none";
+  document.getElementById("pass-input").value="";
+  document.getElementById("login-error").style.display="none";
+}
+
+async function loadDocs(){
+  try{
+    const data=await(await fetch(`${PROXY}/api/docs`)).json();
+    const list=document.getElementById("doc-list");
+    document.getElementById("doc-count").textContent=data.docs?data.docs.length:0;
+    if(!data.docs||data.docs.length===0){list.innerHTML=`<div style="color:#aaa;font-size:13px;text-align:center;padding:20px">No hay documentos subidos todavía</div>`;return;}
+    list.innerHTML=data.docs.map(d=>`<div class="doc-item"><div><div class="doc-name">📄 ${d.name}</div><div class="doc-count">${d.count} fragmentos</div></div><button class="doc-del" onclick="deleteDoc('${d.name.replace(/'/g,"\\'")}')">🗑 Eliminar</button></div>`).join("");
+  }catch(e){console.error(e);}
+}
+
+async function deleteDoc(name){
+  if(!confirm(`¿Eliminar "${name}"?`))return;
+  await fetch(`${PROXY}/api/docs`,{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({name})});
+  loadDocs();
+}
+
+function addLog(msg){
+  const log=document.getElementById("upload-log");
+  log.style.display="block";
+  const line=document.createElement("div");
+  line.className="log-line "+(msg.startsWith("✅")?"log-ok":msg.startsWith("❌")?"log-err":msg.startsWith("⏳")?"log-warn":"log-info");
+  line.textContent=msg;log.appendChild(line);log.scrollTop=log.scrollHeight;
+}
+
+function chunkText(text,size=400,overlap=40){
+  const words=text.split(/\s+/),chunks=[];
+  for(let i=0;i<words.length;i+=size-overlap){const c=words.slice(i,i+size).join(" ");if(c.trim().length>80)chunks.push(c);}
+  return chunks;
+}
+
+async function extractPDFText(file){
+  const lib=window["pdfjs-dist/build/pdf"];
+  lib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const pdf=await lib.getDocument({data:await file.arrayBuffer()}).promise;
+  let text="";
+  for(let i=1;i<=pdf.numPages;i++){const p=await pdf.getPage(i);text+=(await p.getTextContent()).items.map(it=>it.str).join(" ")+"\n";}
+  return text;
+}
+
+async function processFiles(files){
+  document.getElementById("upload-log").innerHTML="";
+  document.getElementById("drop-title").textContent="Subiendo...";
+  document.getElementById("drop-hint").textContent="Por favor espera";
+  for(const file of Array.from(files)){
+    if(!file.name.endsWith(".pdf")){addLog(`⚠️ ${file.name} no es un PDF`);continue;}
+    addLog(`📄 Procesando: ${file.name}`);
+    try{
+      const chunks=chunkText(await extractPDFText(file));
+      addLog(`   → ${chunks.length} fragmentos encontrados`);
+      for(let i=0;i<chunks.length;i++){
+        addLog(`   → Fragmento ${i+1}/${chunks.length}...`);
+        const e=await(await fetch(`${PROXY}/api/embed`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:chunks[i]})})).json();
+        if(!e.embedding)throw new Error("Sin embedding: "+JSON.stringify(e));
+        const s=await(await fetch(`${PROXY}/api/save`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({content:chunks[i],metadata:{source:file.name,chunk:i+1,total:chunks.length},embedding:e.embedding})})).json();
+        if(!s.success)throw new Error("Error guardando: "+JSON.stringify(s));
+      }
+      addLog(`✅ ${file.name} subido correctamente`);
+    }catch(e){addLog(`❌ Error: ${e.message}`);}
+  }
+  document.getElementById("drop-title").textContent="Arrastra tus PDFs aquí";
+  document.getElementById("drop-hint").textContent="o haz clic para seleccionarlos";
+  document.getElementById("file-input").value="";
+  loadDocs();
+}
+
+renderMessages();
+</script>
+</body>
+</html>
+
+
