@@ -2,9 +2,6 @@
   "version": 2,
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": ".*\\.jpg", "dest": "/$0" },
-    { "src": ".*\\.png", "dest": "/$0" },
-    { "src": ".*\\.gif", "dest": "/$0" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
