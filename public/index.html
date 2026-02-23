@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ACRAPOL IA</title>
+  <title>© Acrapol.es | Academia Acrapol S.L.</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Barlow',sans-serif;background:#f5f5f5;height:100vh;display:flex;flex-direction:column;color:#1a1a1a}
-    #header{background:#C1161A;padding:12px 20px;display:flex;align-items:center;gap:12px;border-bottom:3px solid #F5C518;flex-shrink:0}
-    .logo{width:42px;height:42px;background:#F5C518;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:22px;color:#C1161A}
+    #header{background:#383838;padding:12px 20px;display:flex;align-items:center;gap:12px;border-bottom:3px solid #F5C518;flex-shrink:0}
+    .logo{width:42px;height:42px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:22px;color:#C1161A}
     .logo img{width:42px;height:42px;object-fit:contain}
     .titulo{font-weight:bold;font-size:16px;color:#fff}
     .subtitulo{font-size:11px;color:#F5C518}
@@ -78,10 +78,10 @@
     <img src="/Plantilla%20preguntas%20historias.jpg" onerror="this.outerHTML='⚖️'"/>
   </div>
   <div>
-    <div class="titulo">Asistente Virtual</div>
+    <div class="titulo">Acrapol IA</div>
     <div class="subtitulo">Escala Básica · Policía Nacional</div>
   </div>
-  <div class="marca">ACRAPOL IA</div>
+  <div class="marca">© Acrapol.es | Academia Acrapol S.L.</div>
 </div>
 
 <div id="tabs">
@@ -145,18 +145,18 @@ const ADMIN_PASS="acrapol2025";
 
 const PROMPTS={
   chat:`Eres un tutor de la academia ACRAPOL especializado en oposiciones a la Escala Básica de la Policía Nacional de España.
-SOLO puedes responder usando los fragmentos del temario ACRAPOL que se te proporcionan en cada pregunta.
+SOLO puedes responder usando los fragmentos del temario ACRAPOL que se te proporcionan en los documentos del temario.
 Si no se te proporcionan fragmentos del temario o la pregunta no tiene relación con ellos, responde EXACTAMENTE esto:
 "No tengo información sobre esto en el temario de ACRAPOL. Consulta con un profesor o hazme otra pregunta."
-Si se te proporcionan fragmentos, responde basándote únicamente en ellos, citando siempre el artículo exacto y la norma.
+Si se te proporcionan fragmentos, responde con tus palabras basándote únicamente en ellos, citando siempre el artículo exacto y la norma.
 Responde de forma clara, precisa y pedagógica en español.`,
   test:`Eres un generador de preguntas tipo test para la oposición a la Escala Básica de la Policía Nacional.
-Genera entre 5 y 10 preguntas con 3 opciones (A, B, C), indicando la respuesta correcta con explicación.
+Genera el número de preguntas que te indiquen con 3 opciones (A, B, C), indicando la respuesta correcta con explicación.
 Formato: **Pregunta X:** [enunciado] A) [op] B) [op] C) [op] ✅ **Respuesta correcta: X)** — [explicación]`,
   resumen:`Eres un tutor experto en oposiciones a la Escala Básica de la Policía Nacional.
-Elabora resúmenes estructurados con títulos, subtítulos y puntos clave. Resalta conceptos que suelen aparecer en examen.`,
+Elabora resúmenes estructurados en base a los documentos del temario con títulos, subtítulos y puntos clave. Resalta conceptos que suelen aparecer en examen.`,
   simulacro:`Eres un examinador para la oposición a la Escala Básica de la Policía Nacional.
-Genera un simulacro de 20 preguntas tipo test con 3 opciones (A, B, C).
+Genera un simulacro tipo test con el número de preguntas que te indiquen con 3 opciones (A, B, C).
 Primero muestra TODAS las preguntas sin respuestas. Cuando el usuario envíe sus respuestas corrige el examen, muestra la puntuación y explica cada respuesta. Las erróneas restan 0,25 puntos.`
 };
 
